@@ -1,0 +1,14 @@
+pip install web3
+pip install json
+pip install clipboard
+pip install webbrowser
+pip install pyperclip
+pip install Web3
+pip install HTTPProvider
+pip install dotenv
+pip install load_dotenv
+pip install requests
+pip install hexbytes
+pip install HexBytes
+pip install shutil
+pip install time
