@@ -1,4 +1,6 @@
 import functions as ff
+import web3
+from web3 import Web3, HTTPProvider
 import json
 def createInps(ls):
     n = '('
@@ -8,13 +10,13 @@ def createInps(ls):
     return n.replace(',)',')')
 def parse_it(add,path):
     abiPath = ff.crPa([path,'ABI.json'])
-    info = json.loads(ff.reader(ff.crPa([path,'info.json'])).replace("'",'"'))
-    path,network,chainId,RPC,explorer,scanner = info['path'],info["network"],info["chainId"],info["RPC"],info["explorer"],info["scanner"],
+    main = json.loads(ff.reader(ff.crPa([path,'info.json'])).replace("'",'"'))
+    netName,chainId,RPC,nativeCurrency,explorer,scanner,w3 = main['netName'],main['chainId'],main['RPC'],main['nativeCurrency'],main['blockExplorer'],main['scanner'],Web3(Web3.HTTPProvider(main['RPC']))
     ff.pen(add,'currInfo.txt')
     import fun_get as fun
     js,funs = fun.getFuns(abiPath)
     beg = "from web3 import Web3\nimport sys\nimport os\nhome = os.getcwd()\nsys.path.insert(0, '"+home+"')\nimport pK as key\nimport networkChoose as choose\nimport json\nimport functions as f\nsys.path.insert(0, str(home))\nhome,slash = f.homeIt()\n"
-    end = '\nglobal network,chainId,rpc,explorer,scanner,w3,nonce\nadd = "'+str(add)+'"\nabi = f.readerC(f.crPa(["'+path+'","ABI.json"]))\nnetwork,chainId,rpc,explorer,scanner,w3 = "'+network+'","'+chainId+'","'+RPC+'","'+explorer+'","'+scanner+'",Web3(Web3.HTTPProvider("'+RPC+'"))\n\ncont = w3.eth.contract(add,abi = abi)\naccount_1 = w3.eth.account.privateKeyToAccount(key.p)\nnonce = w3.eth.getTransactionCount(account_1.address)'
+    end = '\nglobal netName,chainId,rpc,nativeCurrency,explorer,scanner,w3,nonce\nadd = "'+str(add)+'"\nabi = f.readerC(f.crPa(["currFun","ABI.json"]))\nnetName,chainId,rpc,nativeCurrency,explorer,scanner,w3 = "'+netName+'","'+chainId+'","'+RPC+'","'+nativeCurrency+'","'+explorer+'","'+scanner+'",Web3(Web3.HTTPProvider("'+RPC+'"))\n\ncont = w3.eth.contract(add,abi = abi)\naccount_1 = w3.eth.account.privateKeyToAccount(key.p)\nnonce = w3.eth.getTransactionCount(account_1.address)'
     symbol = 'cont'
     call = []
     asks = []
@@ -27,7 +29,7 @@ def parse_it(add,path):
         name = str(funnames[i])
         varis = str(createInps(funsWhole[name]['inputs']))
         wholeFun = str(name + varis)
-        if funsWhole[name]['stateMutability'] not in ['internal','private','external']:
+        if funsWhole[name]['stateMutability'] not in ['internal','private','external'] and name not in js['modified']['onlyOwner()']:
             asks.append(wholeFun)
             fun_sheet = fun_sheet + 'def '+name+varis+':\n\tx = cont.functions.'+wholeFun+'.call()\n\tf.pen(x,"ask.txt")\n\tprint("'+name+'"," is ",x)\n\treturn x\n'
             if varis == '()':
