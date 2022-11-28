@@ -5,6 +5,12 @@ def getKey(js):
     for key, value in js.items():
         lsN.append(str(key))
     return lsN
+def eatIt(x):
+    for i in range(0,len(x)):
+        if x[0] not in [' ','\t','n','']:
+            return x 
+        x = x[1:]
+    return x
 def ifIt(k,lsN):
         return ls
 def ifThen(n):
@@ -98,15 +104,24 @@ def getInp(x,js):
         n = n+ ' {}'
         return js,n
 def getFuns(path):
-        js = {'funs':[]}
+        contract = f.reader(path.replace('ABI.json','SourceCode.json')).replace('\n','').replace('function','\nfunction').replace('{','\n{').split('\n')
+        js = {'funs':[],'modified':{'onlyOwner()':[]}}
+        input(js)
+        input(len(contract))
+        for i in range(0,len(contract)):
+            if 'onlyOwner' in contract[i] and 'function' in contract[i]:
+                js['modified']['onlyOwner()'].append(contract[i].split('function ')[1].split('(')[0])
         abi = json.loads(str(f.reader(path)))
         lsN = []
         for i in range(0,len(abi)):
             ab = abi[i]
             js,fun = getInp(ab,js)
+
+            
             if ifLen(ab,'type') and ifIn(ab,'type'):
                 if ab['type'] == 'function':     
                     js['funs'].append(fun.replace(',)',')').replace('  ',' '))
+        f.pen(js,'allwallvar.json')
         return js,js['funs']
 
                 
