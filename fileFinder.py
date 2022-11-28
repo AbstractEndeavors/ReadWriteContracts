@@ -78,7 +78,7 @@ def getNumList(ls):
     return [lsN,ls]
 def createAskLs(lsAlph,lsCalls):
     n = ''
-    for i in range(0,len(lsAlph)):
+    for i in range(0,len(lsCalls)):
         n = n + str(lsAlph[i])+') '+ lsCalls[i]+'\n'
     return n
 def mergeLists(ls,ls2):
@@ -94,7 +94,7 @@ def mergeLss(lsNum,lsAlph,inquiry):
         n = n +inquiry[0]+'\n'
     n = n + createAskLs(alphs[0],alphs[1])
     lsAll = mergeLists(nums[0],alphs[0])
-    return lsAll,n
+    return lsAll,n,alphs,nums
 def isInt(x):
     if type(x) is int:
         return True
@@ -107,26 +107,31 @@ def isAnyTypeInLS(x,ls):
     if isInt(x):
         if int(x) in ls:
             return True
-    if str(x) in ls:
+    if str(x).lower() in lowerList(ls):
+        return True
+    if str(x).upper() in higherList(ls):
+        return True
+    if x in ls:
         return True
     return False
+
 def createAsk(js):
-    lsAll,n = mergeLss(js['calls'][0],js['asks'][0],js['inquiry'])
+
+    lsAll,n,alphs,nums= mergeLss(js['calls'][0],js['asks'][0],js['inq'])
     while True:
-            ask = input(n)
-            if isAnyTypeInLS(ask,lsAll):
-                input([ask,isInt(ask)])
-                if isInt(ask) == True:
-                    return js['calls'][1][int(ask)]
-                else:
-                    return js['asks'][1][findItAlph(str(ask),createAlph(len(js['asks'])))]
-            print('looks like you entered an input that was not selectable,please re-input your selection')
+        ask = input(n)
+        if isAnyTypeInLS(ask,lsAll):
+            if isInt(ask) == True :
+                return js['calls'][1][int(ask)]
+            else:
+                return js['asks'][1][int(findItStr(str(ask),createAlph(len(js['asks'][0]))))]
+        print('looks like you entered an input that was not selectable,please re-input your selection')
 def boolAsk(x):
     yes = ['y','yes','true','t','','0']
-    no = ['n','no','false','f',1]
+    no = ['n','no','false','f','1']
     ask = input(x+'\n0) yes\n1) no\n')
     ask = str(ask).lower()
-    if ask.lower() in lowerList(yes):
+    if isAnyTypeInLS(ask,yes):
         return True
     return False
 def isFile(x):
@@ -198,6 +203,13 @@ def lowerList(x):
     for i in range(0,len(x)):
         lsN.append(str(x[i]).lower())
     return lsN
+def higherList(x):
+    lsN = []
+    if isLs(x) == False:
+        x = [x]
+    for i in range(0,len(x)):
+        lsN.append(str(x[i]).upper())
+    return lsN
 def AnyAsk(x):
     if len(x) == 2:
         inp = x[0]+'\n0) exit\n'+x[1]
@@ -208,16 +220,25 @@ def AnyAsk(x):
         return 'exit'
     return ask
 #CleanStrings--------------------------------------------------------------------------------------------------------------------------------------------
-def findItAlph(x,ls):
-    for i in range(0,len(ls)):
-        if x == ls[i]:
-            return i
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def findIt(x,ls):
+    if len(ls) == 0:
+        return False
+    if x  == ls[0]:
+        return 0
     for i in range(0,len(ls)):
         if x == ls[i]:
             return i
-    return None
+def findItStr(x,ls):
+    if len(ls) == 0:
+        return False
+    if str(x)  == str(ls[0]):
+        return 0
+    for i in range(0,len(ls)):
+        if str(x) == str(ls[i]):
+            return i
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 def calcTimeInDays(x):
     return str(round((getTime()-x)/(60*24*60),2))+' days'
 def calcKb(x):
@@ -307,7 +328,6 @@ def getLists():
     for k in range(0,len(lsA)):
         ls,lsN = lsA[k],[]
         for i in range(0,len(ls)):
-            print(allSizeDays(lsAll['home'],ls,i))
             lsN.append(allSizeDays(lsAll['home'],ls,i))
             lsAll['gets'].append(lsN[-1])
 def currateFiles(spec):
