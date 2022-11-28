@@ -45,36 +45,9 @@ def send_it(ans):
     signed_tx = w3.eth.account.sign_transaction(tx, key.p)
     tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 def findIt(x,k):
-    i = 0
-    while str(x[i]) != str(k):
-        i = i + 1
-    return i
-def ifSome(x,ls,js):
-    if x not in js:
-        js[x] = {}
-    if len(ls) >0:
-        js[x]['keys']=ls
-    return js,ls
-def keyIt(js,sa):
-    if 'keys' in js:
-        txt = js['json']
-        key = js['keys']
-        for i in range(0,len(key)):
-            f.pen(txt[key[i]],f.crPa([sa,key[i]+'.json']))
-            js[key[i]] = {'json':txt[key[i]],'keys':keys(txt[key[i]])}
-        
-    return js
-def whileKeys(x,sa,start):
-    jsOg = {'names':[start],str(start):{'json':x,'keys':keys(x)}}
-    jsNew = jsOg[['names'][0]]
-    txt =jsOg['json']
-    key = jsOg['keys'] 
-    for i in range(0,len(key)):
-        nKe = key[i]
-        jso = txt[nKe]
-        f.pen(txt[key[i]],f.crPa([sa,key[i]+'.json']))
-        js[key[i]] = {'json':jso[nKe],'keys':keys(jso[nKe])}
-
+    for i in range(0,len(x)):
+        if x[i] == k:
+            return i
 def chooseAbi():
         js = {}
         info,add,name = getContLoop()
@@ -83,10 +56,8 @@ def chooseAbi():
         infos = ['netName','chainId','RPC','nativeCurrency','blockExplorer','scanner']
         for i in range(0,len(infos)):
                 js[infos[i]] = info[i]
-        
         f.pen(info[-1][0]['SourceCode'],f.crPa([fold,'SourceCode.json']))
         f.pen(info[-1][0]['ABI'],f.crPa([fold,'ABI.json']))
-        
         f.pen(js,crPa(fold,'info.json'))
         info = parse.parse_it(add,fold)
         infos = ['funs','asks','call','funAll','funSheet']
@@ -113,64 +84,133 @@ def safeSplit(x,y,k):
         z = x.split(y)
         if len(z) > k:
             return z
-       
+def isAddress(x):
+    if x[:len('address')] == 'address':
+        return True
+def isBool(x):
+    if x[:len('bool')] == 'bool':
+        return True
+def isString(x):
+    if x[:len('string')] == 'string':
+        return True
+def isBytes(x):
+    if x[:len('bytes')] == 'bytes':
+        return True
+def isList(x):
+    if x[-1] == ']':
+        if x[:-1].split('[')[-1] == '':
+            return [x],'*',0
+        lsN = []
+        for i in range(0,int(x[:-1].split('[')[-1])):
+            lsN.append(x)    
+        return lsN,i,0
+    return x,1,0
+def indetLoop(ty,k):
+    tot = input('indeterminate '+str(ty)+' list, how many inputs will you be appending to it? (will inquire again at this input interval, otherise, inquiry will repeat every loop)')
+    deff = f.isInt(tot)
+    if deff == False:
+        tot = k + 1
+    return tot,deff
+def listLoop(k,tot):
+    print(str(k)+' out of '+str(tot)+' inputs in this list')
+def denyInp(ty,va,fun,ans,exp):
+    print('your '+str(ty)+' input for '+str(va)+' in function '+str(fun)+'; '+str(ans)+' was denied for '+exp)
+def verify(ty,va,fun,ans):
+    return find.boolAsk('your '+str(ty)+' input for '+str(va)+' in functin '+str(fun)+' is '+str(ans)+' that ok?')
+def askInput(ty,va,fun):
+    return input('please input '+str(ty)+' for variable '+str(va)+' in function'+str(fun)+':')
+def askBool(ty,va,fun):
+    return find.boolAsk('please input '+str(ty)+' for variable '+str(va)+' in function'+str(fun)+':')
+def inputUint(ty,va,fun):
+    while isUint(ty):
+        ast = False
+        print('input will be multiplied by 10^'+str(int(dec))+' if * is added to the end of the input)')
+        ans = askInput(ty,va,fun)
+        if ask[-1] == '*':
+            ast,ans = True,ans[:-1]
+        if f.isInt(ans):
+            if ast == True:
+                ans = int(float(int(ans))*float(str('1e'+str(int(dec)))))
+            if verify(ty,va,fun,ans):
+                ifVarisLsApp(ans)
+                return
+def ifVarisLsApp(x):
+    if type(varis['inputs']['inpCurr'][-1]) is list:
+        varis['inputs']['inpCurr'][-1].append(x)
+    else:
+        varis['inputs']['inpCurr'][-1] = x
+def inputAddress(ty,va,fun):
+    while isAddress(ty):
+        ans = grab.tryCheckSum(str(askInput(ty,va,fun)))
+        if ans != False:
+            if verify(ty,va,fun,ans) == True:
+                ifVarisLsApp(ans)
+                return 
+        else:
+            denyInp(ty,va,fun,ans,' bad checksum address')
+def inputBool(ty,va,fun):
+    while isBool(ty):
+        ans = askBool(ty,va,fun)
+        if verify(ty,va,fun,ans):
+            if ans == True:
+                ifVarisLsApp(ans)
+            else:
+                ifVarisLsApp(ans)
+            return
+def inputString(ty,va,fun):
+    while isString(ty):
+        ans = str(askInput(ty,va,fun))
+        if verify(ty,va,fun,ans) == True:
+            ifVarisLsApp(ans)
+            return
+def inputBytes(ty,va,fun):
+    while isBytes(ty):
+        ans = str(askInput(ty,va,fun))
+        if verify(ty,va,fun,ans) == True:
+            ifVarisLsApp(ans)
+            return
+def askAll(ty,va,fun):
+    varis['inputs']['typeCurr'].append([ty,va,fun])
+    varis['inputs']['inpCurr'].append(ty)
+    deff = True
+    tyAc,tot,cou = isList(ty)
+    if type(ty) is list:
+        if tot == '*':
+            tot,deff = indetLoop(ty,cou)
+        else:
+            print('input requres list of a length '+str(tot)+'; the input request will repeat '+str(tot)+' times')
+    while cou < tot:
+        inputAddress(ty,va,fun)
+        inputBool(ty,va,fun)
+        inputString(ty,va,fun)
+        inputBytes(ty,va,fun)
+        cou += 1
+        listLoop(cou,tot)
+        if deff == False:
+            tot = indetLoop(ty,cou)
+def ifInput(js):
+    lsType = ['address','uint','bool','bytes','string']
+    if 'inputs' in js:
+        input(js)
+        inps = js['inputs']
+        for i in range(0,len(inps)):
+            if ' ' in inps[i]:
+                askAll(inps[i].split(' ')[0],inps[i].split(' ')[-1],js['name'])
+            else:
+                 askAll(inps[i],inps[i],js['name']) 
 def createInp(x):
     scanner_url = print_scan()
     ask = askGets()
-    #for i in range(0,len(x)):
-    #    if 'funs.' not in x[i]:
-    #        js['asks'].append('funs.'+x[i])
-    #ask = find.createAsk(js)
-    if '()' not in str(ask):
-        lss = []
-        og = ask.split('(')[0]+'('
-        n = ask.split('(')[1].split(')')[0].split(',')
-        for i in range(0,len(n)):
-            n_a = n[i]
-            ad = ''
-            n_d = n[i].split('_')[0]
-            n_z  = safeSplit(n[i],'_',1)
-            if n_z != None:
-                if len(n_z) >= len('ls'):
-                    if 'ls' in n_z:
-                        if n_z[-2:] == 'ls':
-                            ad = ' as list'
-                            n_d = safeSplit(n[i],'_',0)[-2:]
-                            n_a = n_a.replace(safeSplit(n[i],'_',0)+'_',safeSplit(n[i],'_',0)[-2:]+'_')
-            if 'address' in n_d:
-                ask = input(' please input '+str(n_a)+ad)
-                nn = grab.checkSum(str(ask))
-            elif 'uint' in n_d:
-                if 'uint256' in n_d and 'blocktime' not in n_z :
-                    ok = 'n'
-                    while str(ok).lower() == 'n' or str(ok).lower() == 'no':
-                        ask = input(' please input '+str(n_a)+ad+' (input will be multiplied by 10^'+str(int(dec))+' if * is added to the end of the input): ')
-                        if '*' in str(ask):
-                            ask = int(float(int(ask.split('*')[0]))*float(str('1e'+str(int(dec)))))
-                        ok = input('your input is '+str(int(ask))+' is that ok?')
-                    nn = int(ask) 
-                else:
-                    ask = input(' please input '+str(n_a)+ad)
-                    nn = int(ask)
-            elif 'bool' in n_d:
-                ask = input(' please input '+str(n_a)+ad)
-                if str(ask) == '1':
-                    nn = True
-                else:
-                    nn = False
-            else:
-                ask = input(' please input '+str(n_a)+ad)
-                nn = str(ask)
-            if ad != '':
-                nn = [nn]
-            lss.append(nn)
-        og = og +str(lss)[1:-1]+')'
-    else:
-        og = str(ask)
+    varis['inputs'] = {'typeCurr':[],'inpCurr':[],'funJS':[]}
+    varis['inputs']['funJS'].append(f.jsIt(f.reader('allwallvar.json'))['function'][ask.split('(')[0]])
+    if 'name' not in varis['inputs']['funJS'][-1]:
+        varis['inputs']['funJS'][-1]['name'] = ask.split('(')[0]
+    ifInput(varis['inputs']['funJS'][-1])
+    og = varis['inputs']['funJS'][-1]['name']+'('+str(varis['inputs']['inpCurr'])[1:-1]+')'
     f.pen('import sys\nimport currFun.funcSheet as funs\nsys.path.insert(0, "'+str(home)+'")\nimport functions as f\ndef pen(paper, place):\n\twith open(place, "w") as f:\n\t\tf.write(str(paper))\n\t\tf.close()\n\t\treturn\ntxt = None\ninp = "'+str(og).split('(')[1].split(')')[0]+'"\nif inp == "":\n\tfuns.'+og+'\n\tpen(txt,"answer.txt")\nelse:\n\task = input("did you want to send this? '+str(og).split('(')[0]+','+str(og).split('(')[1].split(')')[0]+'?")\n\tif str(ask).lower() != "n" and str(ask).lower() != "no":\n\t\ttxt = str(funs.'+og+')\n\t\tpen(txt,"answer.txt")','currFun/do_it.py')
     import currFun.do_it as do 
     ans = f.reader('answer.txt')
-    if str(ans) != 'None':
+    if str(ans) != 'None' and type(bool(ans)) is not bool:
         send_it(ans)
         tx = json.loads(str(do.txt).replace("'",'"'))
         tx["nonce"] = w3.eth.getTransactionCount(f.check_sum(tx['from']))
@@ -216,15 +256,9 @@ def copyAndStart(path):
         f.copyIt(crPa(path,'ABI.json'),'currFun')
         allCalls = f.jsIt(f.reader(crPa('currFun','allCalls.json')))
         import currFun.funcSheet as func
-        #account_1 = w3.eth.account.privateKeyToAccount(key.p)
-        #cont = w3.eth.contract(ask,abi = abi)
-        #dec = decimal()
-        ex = ''
-        while ex != 'exit':
-            ex = input('would you like to view all viewable variables in the contract?')
-            if str(ex).lower() != 'n' and str(ex).lower() != 'no':
-                    func.view_all()
-            ex = createInp(allCalls['call'])
+        if find.boolAsk('would you like to view all viewable variables in the contract?'):
+            func.view_all()
+        ex = createInp(allCalls['call'])
 def chooseExistingWallet(name):
    wallJs = f.existsMake({'types':['main','poor','tester','migrate'],'names':[],'adds':{'adds':[]},'main':{'names':[]},'poor':{'names':[]},'tester':{'names':[]},'migrate':{'names':[]}},'walls/wallsJs.json')
    while True:
@@ -245,9 +279,6 @@ def changeEnv(name):
    f.pen(js,'walls/wallJs.json')
    loadKey('walls/'+name+'.env')
    return 
-def loadKey(x):
-   load_dotenv()
-   
 def getWallName(wallJs):      
    wallJs = f.existsMake({'types':['main','poor','tester','migrate'],'names':[],'adds':{'adds':[]},'main':{'names':[]},'poor':{'names':[]},'tester':{'names':[]},'migrate':{'names':[]}},'walls/wallsJs.json')
    while True:
@@ -345,6 +376,5 @@ while True:
   checkCurrAbis()
   checkIfCurrInfoExists()
   otherStart()
-
 
 
