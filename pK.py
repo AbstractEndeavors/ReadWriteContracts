@@ -1,10 +1,8 @@
 import functions as f
+import grabAbi as grab
 from dotenv import load_dotenv
 import os
-def getKey(x):
-	load_dotenv()
-	if f.exists(x) == False:
-		f.pen('privateKey = '+str(input('please enter your private key')),x+'.env')
-	load_dotenv(str(f.reader(x+'.env')))
-	return os.environ.get("privateKey")
+from web3 import Web3
 
+load_dotenv()
+p = os.environ.get("privateKey") 
