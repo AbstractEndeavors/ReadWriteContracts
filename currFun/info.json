@@ -1,1 +1,0 @@
-{'path': 'variables/Ethereum/0x388C818CA8B9251b393131C08a736A67ccB19297', 'add': '0x388C818CA8B9251b393131C08a736A67ccB19297', 'name': 'LidoExecutionLayerRewardsVault', 'network': 'Ethereum', 'chainId': '0x1', 'RPC': 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', 'explorer': 'https://etherscan.io', 'scanner': 'etherscan.io'}
