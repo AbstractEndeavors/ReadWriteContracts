@@ -345,6 +345,7 @@ def removeHiddenFolders():
             lsN.append(ls[i])
     lsAll['folds'] = lsN
 def listQuery(ask):
+    jsAlls['calls']=[["open","back","custom","old"],["open","back","custom","old"]]
     x = lsAll['home']
     n =''
     ex = False
@@ -375,10 +376,11 @@ def filterFandF():
         if isFile(createPath(lsAll['home'],ls[i])) == True:
             lsAll['files'].append(ls[i])
 def fileAsk(ls):
-    ask = create_ask(ls,'current Directory '+str(lsAll['home'])+'\nwhich '+lsAll['type']+'would you like to use?')
+    jsAlls = {'asks':[ls,ls],'inq':'current Directory '+str(lsAll['home'])+'\nwhich '+lsAll['type']+'would you like to use?'}
+    ask = createAsk(js)
     return str(ask.split(' ')[0])
 def foldAsk(ls):
-    ask = create_ask(ls,'current Directory '+str(lsAll['home'])+'\nwhich '+lsAll['type']+'would you like to use?')
+    ask = createAsk(ls,'current Directory '+str(lsAll['home'])+'\nwhich '+lsAll['type']+'would you like to use?')
     return str(ask.split(' ')[0])
 def checkFold(n):
     ex = False
@@ -399,6 +401,7 @@ def checkFile(n):
         return n+slash,n,boolIt
 def displayFiles(x,curate,hidden,typeDisplay):
     ex = False
+    jsAlls['calls']=[["open","back","custom","old"],["open","back","custom","old"]]
     while ex != True:
         x = x.split(' ')[0]
         changeGlob('lsAll',{'home':str(x),'all':foldList(x),'files':[],'folds':[],'gets':[],'type':typeDisplay})
@@ -414,5 +417,6 @@ def displayFiles(x,curate,hidden,typeDisplay):
             ex = foldAsk(lsAll[typeDisplay])
         x,n,ex = listQuery(ex)
     return x,n
+jsAlls = {'calls':[],'asks':[],'inq':""}
 home_it()
 

@@ -89,6 +89,8 @@ def getInp(x,js):
         if ifLen(x,'stateMutability') and ifIn(x,'stateMutability'):
                 n = addItStr(n,x['stateMutability'])
                 js[type][name]['stateMutability'] = x['stateMutability']
+                if x['stateMutability'] == 'view' and x['type'] == 'function':
+                    js['view'].append(x['name'])
         js[type][name]['outputs'] = []
         if ifLen(x,'outputs') and ifIn(x,'outputs'):
                  n = addItStr(n,' returns(')
@@ -105,9 +107,7 @@ def getInp(x,js):
         return js,n
 def getFuns(path):
         contract = f.reader(path.replace('ABI.json','SourceCode.json')).replace('\n','').replace('function','\nfunction').replace('{','\n{').split('\n')
-        js = {'funs':[],'modified':{'onlyOwner()':[]}}
-        input(js)
-        input(len(contract))
+        js = {'funs':[],'modified':{'onlyOwner()':[]},'view':[]}
         for i in range(0,len(contract)):
             if 'onlyOwner' in contract[i] and 'function' in contract[i]:
                 js['modified']['onlyOwner()'].append(contract[i].split('function ')[1].split('(')[0])
@@ -116,12 +116,10 @@ def getFuns(path):
         for i in range(0,len(abi)):
             ab = abi[i]
             js,fun = getInp(ab,js)
-
-            
             if ifLen(ab,'type') and ifIn(ab,'type'):
                 if ab['type'] == 'function':     
                     js['funs'].append(fun.replace(',)',')').replace('  ',' '))
-        f.pen(js,'allwallvar.json')
+        f.pen(js,f.createPath(path.replace(path.split('/')[-1],''),'allWallVar.json'))
         return js,js['funs']
 
                 
