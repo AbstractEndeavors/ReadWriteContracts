@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import PySimpleGUI as psg
 import functions as fun
 def getDefs(js,jsDef):
     keys = fun.getKeys(js)
@@ -7,8 +8,8 @@ def getDefs(js,jsDef):
         jsDef[key] = js[key]
     return jsDef
 def ProgressBar(js):
-    js = getDefs(js,{"val":0,"key":None,"size":(25,15),"orientation":'h',"enable_events":False})
-    return sg.ProgressBar(js['val'],key=js['key'],size=js['size'],orientation=js['orientation'])
+    js = getDefs(js,{"val":0,"key":None,"size":(25,15),"orientation":'h',"enable_events":False,"bar_color":['blue','green']})
+    return sg.ProgressBar(js['val'],key=js['key'],size=js['size'],orientation=js['orientation'],bar_color=js["bar_color"])
 def inputTxt(js):
     js = getDefs(js,{"text":"","key":None,"font":None,"size":(25,15),"background_color":None,"enable_events":False})
     return  sg.InputText(js["text"],key=js["key"],size=js["size"],font=js["font"],background_color=js["background_color"],enable_events=js["enable_events"])
@@ -59,6 +60,8 @@ def getFullParams(js):
         return [[checkBox({"title":"def","visible":True,"key":js["title"]+'_default_'+str(js["default"]),"default":js["default"],"pad":(len('default'),len('default')),"enable_events":True})],[js["layout"]],[getButton({"title":js["title"],"visible":True,"key":js["title"]+"_info","enable_events":True,"button_color":None,"bind_return_key":True})]]
 def mkParam(na,defa,layout):
         return [getFullParams({"title":na,"default":defa,"layout":layout})]
+def yNPopUp(atts):
+    return psg.popup_yes_no("contract found with the attributes:\n"+str(atts)+"\nis this the one you were looking for?",  title="YesNo")
 '''
 txtBox({"title":"","key":None,"font":None,"background_color":None,"enable_events":False," grab":None})
 slider({"title":"","range":None,"visible":True,"key":None,"default_value":None,"resolution":None,"tick_interval":None,"pad":(0,0),"orientation":None,"disable_number_display":None,"enable_events":False})

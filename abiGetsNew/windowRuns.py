@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import functions as fun
 import grabApi
 import sys
 def startCont(path):
@@ -25,8 +26,8 @@ def widowMain(window):
                   progress_bar = window['progressbar']
                   progress_bar.UpdateBar(k)
                   keys = fun.getKeys(rpcLs[k])
-                  for i in range(0,len(ls)):
-                        window[keys[i]].update(value=rpcLs[k][keys[i]])
+                  
+                  window['progTitle'].update(value=rpcLs[k])
                   window['progTitle'].update(value=rpcLs[k])
                   grabApi.deriveAnyInfo(add,k)
         elif event == 'Edit Me':

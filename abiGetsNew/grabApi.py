@@ -207,8 +207,8 @@ def deriveAnyInfo(add,k):
                             for h in range(0,len(lsAll)):
                                 fun.pen(lsAll[h],fun.crPa(dirPath,jsName[h]+'.py'))
                             sys.path.insert(0, dirPath)
-                            import dothefunx
-                            sys.path.insert(0, home)
+                            #import dothefunx
+                            #sys.path.insert(0, home)
 global netName,chainId,rpc,nativeCurrency,explorer,scanner,w3,home,slash,rpcLs,window
 from rpcListNew import rpcs as rpcLs
 home,slash = homeIt()

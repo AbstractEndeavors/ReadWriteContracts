@@ -126,7 +126,7 @@ def getType(ty,x):
     elif 'address' in ty:
         return w3.toChecksumAddress(str(x))
     elif 'bool' in ty:
-        return bool(str(x))
+        return mkBool(x)
     else:
         return str(x)
 def cleanLs(ls):
