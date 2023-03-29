@@ -1,0 +1,1 @@
+['allPairs(uint256)', 'createPair(address__tokenA,address__tokenB)', 'getPair(address,address)', 'setFeeTo(address___feeTo)', 'setFeeToSetter(address___feeToSetter)']

@@ -1,0 +1,1 @@
+['funs.allPairs(uint256)', 'funs.createPair(address__tokenA,address__tokenB)', 'funs.getPair(address,address)', 'funs.setFeeTo(address___feeTo)', 'funs.setFeeToSetter(address___feeToSetter)']
